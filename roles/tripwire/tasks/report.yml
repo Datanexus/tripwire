@@ -1,0 +1,24 @@
+# (c) Copyright 2018 DataNexus Inc.  All Rights Reserved.
+#
+#
+---
+# CentOS / Redhat 7
+- block:
+  
+  - name: TRIPWIRE OVERLAY | getting all reports
+    find:
+      paths: "{{ tripwire.config.report_dir }}/"
+    register: reports
+
+  - name: TRIPWIRE OVERLAY | determining latest report
+    set_fact:
+      latest_report: "{{ reports.files | sort(attribute='mtime',reverse=true) | first }}"
+  
+  - name: TRIPWIRE OVERLAY | displaying report
+    command: "/sbin/twprint -m r -t {{ tripwire.config.verbosity }} -r {{ latest_report.path }}"
+    register: report
+  
+  - debug: msg="{{ report.stdout_lines }}"
+  
+  become: yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'

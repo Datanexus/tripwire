@@ -1,0 +1,29 @@
+#!/usr/bin/env ansible-playbook
+# (c) 2018 DataNexus Inc.  All Rights Reserved.
+#
+# main routine for provisioning tripwire kafka
+---
+- name: TRIPWIRE OVERLAY | installing tripwire platform across all nodes
+  hosts: tripwire
+  tags:
+    - tripwire
+  vars_files:
+    - vars/tripwire.yml
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+        
+- name: TRIPWIRE OVERLAY | displaying latest report
+  hosts: tripwire
+  tags:
+    - report
+  vars_files:
+    - vars/tripwire.yml
+  gather_facts: yes
+  tasks:
+    - include_role:
+        name: tripwire
+        tasks_from: report
+
+

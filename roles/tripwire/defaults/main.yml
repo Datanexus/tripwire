@@ -1,0 +1,9 @@
+# configuration variables for tripwire
+tripwire:
+  user: root
+  group: root
+  config:
+    local_passphrase: 'datanexus'
+    site_passphrase: 'datanexus'
+    report_dir: /var/lib/tripwire/report
+    verbosity: 4
