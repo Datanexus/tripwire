@@ -1,0 +1,81 @@
+# (c) Copyright 2018 DataNexus Inc.  All Rights Reserved.
+#
+#
+---
+- block:
+  
+  # CentOS / Redhat 7
+  - name: TRIPWIRE OVERLAY | installing tripwire packages
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - epel-release-7-11
+      - tripwire
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+  
+  - name: TRIPWIRE OVERLAY | checking /etc/tripwire/{{ hostvars[inventory_hostname].ansible_hostname }}-local.key
+    stat: path="/etc/tripwire/{{ hostvars[inventory_hostname].ansible_hostname }}-local.key"
+    register: existing_key
+    
+  - name: TRIPWIRE OVERLAY | generating local key (this may take some time)
+    command: "/sbin/twadmin --generate-keys -L /etc/tripwire/{{ hostvars[inventory_hostname].ansible_hostname }}-local.key -P {{ local_passphrase | default(tripwire.config.local_passphrase) }}"
+    when: not existing_key.stat.exists
+  
+  - name: TRIPWIRE OVERLAY | checking /etc/tripwire/site.key
+    stat: path=/etc/tripwire/site.key
+    register: existing_key
+    
+  - name: TRIPWIRE OVERLAY | generating site key (this make take some time)
+    command: "/sbin/twadmin --generate-keys -S /etc/tripwire/site.key -Q {{ site_passphrase | default(tripwire.config.site_passphrase) }}"
+    when: not existing_key.stat.exists
+  
+  - name: TRIPWIRE OVERLAY | hacking configuration to enable automation
+    lineinfile:
+      path: /etc/tripwire/twcfg.txt
+      regexp: '^EDITOR'
+      line: 'EDITOR                 =/bin/cat'
+  
+  - name: TRIPWIRE OVERLAY | enabling syslog reporting
+    lineinfile:
+      path: /etc/tripwire/twcfg.txt
+      regexp: '^SYSLOGREPORTING'
+      line: "SYSLOGREPORTING        ={{ tripwire.config.syslog }}"
+      
+  - name: TRIPWIRE OVERLAY | creating and signing configuration file
+    command: "/sbin/twadmin --create-cfgfile -S /etc/tripwire/site.key -Q {{ site_passphrase | default(tripwire.config.site_passphrase) }} /etc/tripwire/twcfg.txt"
+
+  - name: TRIPWIRE | installing tripwire policy into /etc/tripwire
+    template:
+      src: twpol.j2
+      dest: /etc/tripwire/twpol.txt
+      mode: 0644
+      owner: "{{ tripwire.user }}"
+      group: "{{ tripwire.group }}"
+  
+  - name: TRIPWIRE OVERLAY | ensuring datanexus policy section is present
+    blockinfile:
+      path: /etc/tripwire/twpol.txt
+      insertbefore: "^# disabled-entries:"
+      block: |
+        # DataNexus platform configuration files.
+        (
+          rulename = "DataNexus platform configuration",
+          severity = $(SIG_HI)
+        )
+        {
+          {{ rules | default() }}
+          {{ tripwire.rules }}
+        }
+      marker: "# datanexus {mark} ANSIBLE MANAGED BLOCK"
+
+  - name: TRIPWIRE OVERLAY | creating and signing policy file
+    command: "/sbin/twadmin --create-polfile -S /etc/tripwire/site.key -Q {{ site_passphrase | default(tripwire.config.site_passphrase) }} /etc/tripwire/twpol.txt" 
+  
+  - name: TRIPWIRE OVERLAY | creating initial database (this may take some time)
+    command: "/sbin/tripwire --init -P {{ local_passphrase | default(tripwire.config.local_passphrase) }}"
+    
+  # - name: TRIPWIRE OVERLAY | checking file integrity (this may take some time)
+ #    command: '/sbin/tripwire --check'
+    
+  become: yes

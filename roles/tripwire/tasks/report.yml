@@ -1,0 +1,22 @@
+# (c) Copyright 2018 DataNexus Inc.  All Rights Reserved.
+#
+#
+---
+- block:
+  
+  - name: TRIPWIRE OVERLAY | getting all reports
+    find:
+      paths: "{{ tripwire.config.report_dir }}/"
+    register: reports
+
+  - name: TRIPWIRE OVERLAY | determining latest report
+    set_fact:
+      latest_report: "{{ reports.files | sort(attribute='mtime',reverse=true) | first }}"
+  
+  - name: TRIPWIRE OVERLAY | displaying report
+    command: "/sbin/twprint -m r -t {{ tripwire.config.verbosity }} -r {{ latest_report.path }}"
+    register: report
+  
+  - debug: msg="{{ report.stdout_lines }}"
+  
+  become: yes
