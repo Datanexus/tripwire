@@ -7,3 +7,8 @@ tripwire:
     site_passphrase: 'datanexus'
     report_dir: /var/lib/tripwire/report
     verbosity: 4
+    # write the results to syslog
+    syslog: 'true'
+  rules: |
+        /etc/kafka/server.properties        -> $(SEC_CONFIG) ;
+          /etc/kafka/zookeeper.properties     -> $(SEC_CONFIG) ;

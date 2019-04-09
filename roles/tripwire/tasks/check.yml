@@ -1,0 +1,10 @@
+# (c) Copyright 2018 DataNexus Inc.  All Rights Reserved.
+#
+#
+---
+- name: TRIPWIRE OVERLAY | checking file integrity
+  command: '/sbin/tripwire --check'
+  become: yes
+  register: report
+  
+- debug: msg="{{ report.stdout_lines }}"  

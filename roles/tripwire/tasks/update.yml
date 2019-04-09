@@ -1,10 +1,10 @@
 # (c) Copyright 2018 DataNexus Inc.  All Rights Reserved.
 #
-#
+# blanket accept latest report
 ---
 - block:
   
-  - name: TRIPWIRE OVERLAY | getting all reports
+  - name: TRIPWIRE OVERLAY | getting latest report
     find:
       paths: "{{ tripwire.config.report_dir }}/"
     register: reports
@@ -12,11 +12,8 @@
   - name: TRIPWIRE OVERLAY | determining latest report
     set_fact:
       latest_report: "{{ reports.files | sort(attribute='mtime',reverse=true) | first }}"
-  
-  - name: TRIPWIRE OVERLAY | displaying report
-    command: "/sbin/twprint -m r -t {{ tripwire.config.verbosity }} -r {{ latest_report.path }}"
-    register: report
-  
-  - debug: msg="{{ report.stdout_lines }}"
-  
+
+  - name: TRIPWIRE OVERLAY | updating tripwire database with latest report
+    command: "/sbin/tripwire --update --twrfile {{ latest_report.path }} -P {{ local_passphrase | default(tripwire.config.local_passphrase) }}"
+
   become: yes

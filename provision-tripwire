@@ -1,29 +1,49 @@
 #!/usr/bin/env ansible-playbook
 # (c) 2018 DataNexus Inc.  All Rights Reserved.
 #
-# main routine for provisioning tripwire kafka
+# main routine for provisioning tripwire
 ---
-- name: TRIPWIRE OVERLAY | installing tripwire platform across all nodes
-  hosts: tripwire
+- name: TRIPWIRE OVERLAY | installing tripwire platform across kafka nodes
+  hosts: all:!shaw:!elasticsearch
   tags:
     - tripwire
   vars_files:
-    - vars/tripwire.yml
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
   gather_facts: yes
   tasks:
     - import_role:
         name: tripwire
-        
+
+- name: TRIPWIRE OVERLAY | checking file integrity
+  hosts: all:!shaw:!elasticsearch
+  tags:
+    - check
+  gather_facts: no
+  tasks:
+    - include_role:
+        name: tripwire
+        tasks_from: check
+
+- name: TRIPWIRE OVERLAY | updating database
+  hosts: all:!shaw:!elasticsearch
+  tags:
+    - update
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - include_role:
+        name: tripwire
+        tasks_from: update
+
 - name: TRIPWIRE OVERLAY | displaying latest report
-  hosts: tripwire
+  hosts: all:!shaw:!elasticsearch
   tags:
     - report
   vars_files:
-    - vars/tripwire.yml
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
   gather_facts: yes
   tasks:
     - include_role:
         name: tripwire
         tasks_from: report
-
-

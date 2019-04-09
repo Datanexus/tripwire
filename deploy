@@ -2,7 +2,6 @@
 # (c) Copyright 2016 DataNexus Inc.  All Rights Reserved. 
 # tripwire platform deployment wrapper
 
-export application=tripwire   # application overlay to deploy
 : "${AWS_PROFILE:=datanexus}" && export AWS_PROFILE=$AWS_PROFILE    # sets this to a reasonable ~/.aws/credentials default
 : "${AZURE_PROFILE:=datanexus}" && export AZURE_PROFILE="$AZURE_PROFILE"    # sets this to a reasonable ~/.azure/credentials default
 
@@ -13,9 +12,20 @@ if [ $# -eq 0 ] || [ "$1" = "-h" ] ; then
     exit 0
 fi
 
+application="${1}"   # overlay to deploy
+tenant=`/usr/bin/basename ${3}`   # derive tenant name from the path; currently unused
+
+# if tripwire is deployed statically; grab the inventory from the front and dump the argument
+if [ $# -gt 2 ] && [ -f "${2}" ]; then
+  INVENTORY="--inventory=${2}"
+  shift && shift
+fi
+
 # if report is passed in as the last argument set the tag to just run the report
 for i in "$@" ; do
-  [[ $i == "report" ]] && application=$i ;
+  [[ $i == "check" ]] && application=${i} ;
+  [[ $i == "update" ]] && application=${i} ;
+  [[ $i == "report" ]] && application=${i} ;
 done
 
-./provision-tripwire --inventory=$1 --tags "$application" -e "tenant=$2 project=$3 cloud=$4 region=$5 domain=$6 cluster=$7"
+./provision-tripwire ${INVENTORY} --tags "$application" -e "tenant_config_path=${1}"

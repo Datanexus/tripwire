@@ -60,8 +60,8 @@ TWPOL="/etc/tripwire";
 TWDB="/var/lib/tripwire";
 TWSKEY="/etc/tripwire";
 TWLKEY="/etc/tripwire";
-TWREPORT="/var/lib/tripwire/report";
-HOSTNAME=broker-878ce6ee3d23434c83a655a41bd6c5a6;
+TWREPORT="{{ tripwire.config.report_dir }}";
+HOSTNAME={{ ansible_hostname }};
 
 @@section FS
 SEC_CRIT      = $(IgnoreNone)-SHa ;  # Critical files that cannot change
