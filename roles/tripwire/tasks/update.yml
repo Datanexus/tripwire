@@ -14,6 +14,6 @@
       latest_report: "{{ reports.files | sort(attribute='mtime',reverse=true) | first }}"
 
   - name: TRIPWIRE OVERLAY | updating tripwire database with latest report
-    command: "/sbin/tripwire --update --twrfile {{ latest_report.path }} -P {{ local_passphrase | default(tripwire.config.local_passphrase) }}"
+    command: "tripwire --update --twrfile {{ latest_report.path }} -L /etc/tripwire/{{ hostvars[inventory_hostname].ansible_hostname }}-local.key -P {{ local_passphrase | default(tripwire.config.local_passphrase) }}"
 
   become: yes

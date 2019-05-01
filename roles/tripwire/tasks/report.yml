@@ -14,7 +14,7 @@
       latest_report: "{{ reports.files | sort(attribute='mtime',reverse=true) | first }}"
   
   - name: TRIPWIRE OVERLAY | displaying report
-    command: "/sbin/twprint -m r -t {{ tripwire.config.verbosity }} -r {{ latest_report.path }}"
+    command: "twprint -m r -t {{ tripwire.config.verbosity }} -r {{ latest_report.path }} -L /etc/tripwire/{{ hostvars[inventory_hostname].ansible_hostname }}-local.key"
     register: report
   
   - debug: msg="{{ report.stdout_lines }}"

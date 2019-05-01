@@ -12,3 +12,7 @@ tripwire:
   rules: |
         /etc/kafka/server.properties        -> $(SEC_CONFIG) ;
           /etc/kafka/zookeeper.properties     -> $(SEC_CONFIG) ;
+packages:
+  epel_version: '7-11'
+  # latest available rpm for RHEL6; RHEL7 uses EPEL latest
+  tripwire_version: '2.4.3.5-4'

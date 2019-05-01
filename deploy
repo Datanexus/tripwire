@@ -7,8 +7,8 @@
 
 if [ $# -eq 0 ] || [ "$1" = "-h" ] ; then
     printf "Usage:  deploy [-h]\\thelp\\n"
-    printf "\\t deploy [INVENTORY TENANT PROJECT CLOUD REGION DOMAIN CLUSTER]\\tdeploy %s overlay with the specified values\\n" "$application"
-    printf "Example: deploy datanexus demo aws us-east-1 development none\\n"
+    printf "\\t deploy tripwire INVENTORY TENANT_CONFIG \\tdeploy %s overlay with the specified values\\n" "$application"
+    printf "Example: deploy tripwire hostsfile ../datanexus   \\n"
     exit 0
 fi
 

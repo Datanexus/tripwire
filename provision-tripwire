@@ -3,7 +3,7 @@
 #
 # main routine for provisioning tripwire
 ---
-- name: TRIPWIRE OVERLAY | installing tripwire platform across kafka nodes
+- name: TRIPWIRE OVERLAY | installing tripwire platform across platform nodes
   hosts: all:!shaw:!elasticsearch
   tags:
     - tripwire
