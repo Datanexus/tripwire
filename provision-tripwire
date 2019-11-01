@@ -4,7 +4,7 @@
 # main routine for provisioning tripwire
 ---
 - name: TRIPWIRE OVERLAY | installing tripwire platform across platform nodes
-  hosts: all:!shaw:!elasticsearch
+  hosts: all:!controlcenter_broker:!all_brokers
   tags:
     - tripwire
   vars_files:
@@ -15,7 +15,7 @@
         name: tripwire
 
 - name: TRIPWIRE OVERLAY | checking file integrity
-  hosts: all:!shaw:!elasticsearch
+  hosts: all:!controlcenter_broker:!all_brokers
   tags:
     - check
   gather_facts: no
@@ -25,7 +25,7 @@
         tasks_from: check
 
 - name: TRIPWIRE OVERLAY | updating database
-  hosts: all:!shaw:!elasticsearch
+  hosts: all:!controlcenter_broker:!all_brokers
   tags:
     - update
   vars_files:
@@ -37,7 +37,7 @@
         tasks_from: update
 
 - name: TRIPWIRE OVERLAY | displaying latest report
-  hosts: all:!shaw:!elasticsearch
+  hosts: all:!controlcenter_broker:!all_brokers
   tags:
     - report
   vars_files:
