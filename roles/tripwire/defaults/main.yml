@@ -9,10 +9,10 @@ tripwire:
     verbosity: 4
     # write the results to syslog
     syslog: 'true'
-  rules: |
-        /etc/kafka/server.properties        -> $(SEC_CONFIG) ;
-          /etc/kafka/zookeeper.properties     -> $(SEC_CONFIG) ;
+  # default_rules: |
+ #        /etc/kafka/server.properties        -> $(SEC_CONFIG) ;
+ #          /etc/kafka/zookeeper.properties     -> $(SEC_CONFIG) ;
 packages:
   epel_version: '7-11'
   # latest available rpm for RHEL6; RHEL7 uses EPEL latest
-  tripwire_version: '2.4.3.5-4'
+  tripwire_version: '2.4.3.7-1'

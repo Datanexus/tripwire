@@ -3,8 +3,8 @@
 #
 # main routine for provisioning tripwire
 ---
-- name: TRIPWIRE OVERLAY | installing tripwire platform across platform nodes
-  hosts: all:!controlcenter_broker:!all_brokers
+- name: TRIPWIRE OVERLAY | installing tripwire platform across zookeeper nodes
+  hosts: zookeeper
   tags:
     - tripwire
   vars_files:
@@ -13,6 +13,136 @@
   tasks:
     - import_role:
         name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.zookeeper }}"
+        
+- name: TRIPWIRE OVERLAY | installing tripwire platform across broker nodes
+  hosts: kafka_broker
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.broker }}"
+          
+- name: TRIPWIRE OVERLAY | installing tripwire platform across control center nodes
+  hosts: controlcenter
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+        
+- name: TRIPWIRE OVERLAY | installing tripwire platform across cruise control nodes
+  hosts: cruisecontrol
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.cruisecontrol }}"
+        
+- name: TRIPWIRE OVERLAY | installing tripwire platform across registry nodes
+  hosts: registry
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.registry }}"
+        
+- name: TRIPWIRE OVERLAY | installing tripwire platform across connect nodes
+  hosts: kafka_connect
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.connect }}"
+        
+- name: TRIPWIRE OVERLAY | installing tripwire platform across rest proxy nodes
+  hosts: rest_proxy
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.restproxy }}"
+        
+- name: TRIPWIRE OVERLAY | installing tripwire platform across ksql nodes
+  hosts: kafka_ksql
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.ksql }}"
+        
+- name: TRIPWIRE OVERLAY | installing tripwire platform across elasticsearch nodes
+  hosts: elasticsearch
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.elasticsearch }}"
+
+- name: TRIPWIRE OVERLAY | installing tripwire platform across nifi nodes
+  hosts: nifi
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.nifi }}"
+        
+- name: TRIPWIRE OVERLAY | installing tripwire platform across shaw nodes
+  hosts: shaw
+  tags:
+    - tripwire
+  vars_files:
+    - "{{ tenant_config_path }}/config/applications/tripwire.yml"
+  gather_facts: yes
+  tasks:
+    - import_role:
+        name: tripwire
+      vars:
+        host_rules: "{{ platform_rules.shaw }}"
 
 - name: TRIPWIRE OVERLAY | checking file integrity
   hosts: all:!controlcenter_broker:!all_brokers

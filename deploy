@@ -28,4 +28,4 @@ for i in "$@" ; do
   [[ $i == "report" ]] && application=${i} ;
 done
 
-./provision-tripwire ${INVENTORY} --tags "$application" -e "tenant_config_path=${1}"
+./provision-tripwire ${INVENTORY} --tags "$application" -e "tenant_config_path=${1} tenant=${tenant}"
