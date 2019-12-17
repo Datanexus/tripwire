@@ -90,9 +90,9 @@
   - name: TRIPWIRE OVERLAY | creating and signing configuration file
     command: "twadmin --create-cfgfile -S /etc/tripwire/site.key -Q {{ site_passphrase | default(tripwire.config.site_passphrase) }} /etc/tripwire/twcfg.txt"
 
-  - name: TRIPWIRE OVERLAY | installing tripwire policy into /etc/tripwire
+  - name: TRIPWIRE OVERLAY | installing {{ ansible_distribution }} tripwire policy into /etc/tripwire
     template:
-      src: twpol.j2
+      src: "twpol-{{ ansible_distribution }}.j2"
       dest: /etc/tripwire/twpol.txt
       mode: 0644
       owner: "{{ tripwire.user }}"
